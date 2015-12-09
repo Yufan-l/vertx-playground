@@ -9,6 +9,22 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-jdbc-client</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.3.3</version>
+		</dependency>
+
+		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-core</artifactId>
 			<version>3.0.0</version>
@@ -42,28 +58,61 @@
 
 
 	<build>
-		<plugins>
+		<plugins><!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>2.4.1</version> <executions> <execution> <phase>package</phase> 
+				<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
+				implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
+				<mainClass>vertx.playground.java.draw.Server</mainClass> </transformer> </transformers> 
+				</configuration> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.1</version>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
-							<goal>shade</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>vertx.playground.java.draw.Server</mainClass>
-								</transformer>
-							</transformers>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<!-- This plugin builds the Docker image. It merges src/main/docker/Dockerfile 
+					with the resources set in the configuration. The resources should embed the 
+					current project and its dependencies. Here there is no dependencies. -->
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.2.8</version>
+				<executions>
+					<execution>
+						<id>docker</id>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+					<imageName>vertex-server-sample</imageName>
+					<resources>
+						<resource>
+							<targetPath>/verticles</targetPath>
+							<directory>${project.build.directory}</directory>
+							<includes>
+								<include>${project.artifactId}-${project.version}.jar</include>
+							</includes>
+						</resource><!-- <resource> <targetPath>/verticles/resources</targetPath> 
+							<directory>src/main/resources</directory> <includes> <include>**</include> 
+							</includes> </resource> -->
+					</resources>
+				</configuration>
+			</plugin>
+
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -79,6 +128,43 @@
 							<arg>-Acodetrans.output=${project.basedir}/src/main</arg>
 							<arg>-Acodetrans.config=${basedir}/codetrans-config.json</arg>
 						</compilerArgs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>build-helper-maven-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>add-source</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
 			</plugins>

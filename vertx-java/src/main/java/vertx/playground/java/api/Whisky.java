@@ -1,44 +1,56 @@
 package vertx.playground.java.api;
 
+import io.vertx.core.json.JsonObject;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Whisky {
 
-  private static final AtomicInteger COUNTER = new AtomicInteger();
+	private final int id;
 
-  private final int id;
+	private String name;
 
-  private String name;
+	private String origin;
 
-  private String origin;
+	public Whisky(String name, String origin) {
+		this.name = name;
+		this.origin = origin;
+		this.id = -1;
+	}
 
-  public Whisky(String name, String origin) {
-    this.id = COUNTER.getAndIncrement();
-    this.name = name;
-    this.origin = origin;
-  }
+	public Whisky(JsonObject json) {
+		this.name = json.getString("NAME");
+		this.origin = json.getString("ORIGIN");
+		this.id = json.getInteger("ID");
+	}
 
-  public Whisky() {
-    this.id = COUNTER.getAndIncrement();
-  }
+	public Whisky() {
+		this.id = -1;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public Whisky(int id, String name, String origin) {
+		this.id = id;
+		this.name = name;
+		this.origin = origin;
+	}
 
-  public String getOrigin() {
-    return origin;
-  }
+	public String getName() {
+		return name;
+	}
 
-  public int getId() {
-    return id;
-  }
+	public String getOrigin() {
+		return origin;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public int getId() {
+		return id;
+	}
 
-  public void setOrigin(String origin) {
-    this.origin = origin;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
 }

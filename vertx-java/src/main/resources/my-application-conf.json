@@ -1,0 +1,7 @@
+{
+  "http.port" : 8082,
+  "url": "jdbc:hsqldb:file:db/whiskies",
+  "driver_class": "org.hsqldb.jdbcDriver",
+  "mongo_uri": "mongodb://localhost:27017",
+  "mongo_db": "amazon-goodies"
+}

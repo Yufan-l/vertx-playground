@@ -43,7 +43,7 @@ public class ServerTest {
 	        );
 
 	    // We pass the options as the second parameter of the deployVerticle method.
-	    vertx.deployVerticle(Server.class.getName(), options, context.asyncAssertSuccess());
+	    vertx.deployVerticle(VertxRestServer.class.getName(), options, context.asyncAssertSuccess());
 	  }
 
 	  /**

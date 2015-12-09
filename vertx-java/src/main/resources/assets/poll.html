@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Whisky Collection</title>
+    <title>straw poll</title>
 
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -11,12 +11,12 @@
 <body>
 <div class="container" role="main">
     <div class="jumbotron">
-        <h1>My Whisky Collection</h1>
+        <h1>Straw Poll</h1>
 
-        <p>Just an example of simple CRUD application developed using Vert.x and Vertx Web.</p>
+        <p>Just an example of realtime polling.</p>
     </div>
     <div class="page-header">
-        <h1>My Whiskies</h1>
+        <h1>My Poll</h1>
         <button class="pull-right btn btn-primary product-add" data-action="add" data-toggle="modal"
                 data-target="#productModal">
             <span class="glyphicon glyphicon-plus"></span> Add a new bottle
@@ -45,8 +45,8 @@
         load();
         initModal();
     });
-    function create(name, origin, ip) {
-        $.post("/api/whiskies", JSON.stringify({name: name, origin: origin, ip:ip}), function () {
+    function create(name, origin) {
+        $.post("/api/whiskies", JSON.stringify({name: name, origin: origin}), function () {
             load();
         }, "json");
     }
@@ -110,7 +110,7 @@
                 modal.find('#product-name').val("");
                 modal.find('#product-origin').val("");
                 productAction.click(function () {
-                    create($("#product-name").val(), $("#product-origin").val(),"mock-ip");
+                    create($("#product-name").val(), $("#product-origin").val());
                     $('#productModal').modal('toggle');
                 });
             } else {
